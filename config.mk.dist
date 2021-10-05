@@ -1,0 +1,44 @@
+#
+# Before using this software, you must populate this file and copy it
+# to 'config.mk'.
+#=============================================================================
+
+TMP_DIR = /tmp/.elblogs_$(PID)
+
+DATA = ./data
+
+# Log files retrieved from AWS will be stored in this directory
+
+DATA_LOGS = $(DATA)/logs
+
+# Output files will be stored in this directory
+
+OUTPUT_DIR = $(DATA)/output
+
+# Prefix to use when generating a filename (generally set from the command line)
+
+PREFIX = myprefix
+
+# AWS profile allowing log access
+
+AWS_PROFILE = default
+
+# AWS S3 bucket
+
+AWS_BUCKET = mybucket
+
+# Account identifier
+
+AWS_ACCOUNT = <Account identifier>
+
+# AWS region
+
+AWS_REGION = eu-west-1
+
+# Date to analyze as 'YYYY/MM/DD'
+
+DATE = 2021/10/01
+
+# Consider only URL containing this host string
+
+HOST = my.website.com
