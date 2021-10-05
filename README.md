@@ -8,12 +8,21 @@ Log files are read from stdin.
 
 ### Dependencies
 
+#### PHP CLI
+
+This software uses the PHP CLI interpreter.
+
+Depending on your logs size, you will probably need to increase the
+'memory_limit' parameter in your 'php.ini' file (I use '1024M').
+
+#### 'Browser' library
+
 This software uses cbschuld's 'Browser.php' software. In order to install it,
-just clone this repo as 'src/Browser' :
+just clone its repo in 'src/Browser' :
 
 - git clone git@github.com:cbschuld/Browser.php.git src/Browser
  
-# Configuration
+### Configuration
 
 Before launching any of the 'make' target, you must copy the 'config.mk.dist'
 file to 'config.mk' and configure it to reflect your case.
