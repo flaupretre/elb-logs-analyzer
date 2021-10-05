@@ -3,7 +3,7 @@ include config.mk
 
 #-----------------
 
-AWS_SOURCE = s3://$(AWS_BUCKET)/AWSLogs/$(AWS_ELB)/elasticloadbalancing/$(AWS_REGION)/$(DATE)
+AWS_SOURCE = s3://$(AWS_BUCKET)/AWSLogs/$(AWS_ACCOUNT)/elasticloadbalancing/$(AWS_REGION)/$(DATE)
 
 #-----------------
 
