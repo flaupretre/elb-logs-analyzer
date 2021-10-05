@@ -30,14 +30,13 @@ public function __construct($reqset, $clientset)
     $this->itv[$mn] = new Interval($mn);
   }
 
-  foreach($clientset->clients as $client) {
-    for($mn = self::to_mn($client->min_tstamp) ; $mn <= self::to_mn($client->max_tstamp); $mn++) {
-      $this->itv[$mn]->inc_clients();
-    }
-  }
-
   foreach($reqset->reqs as $req) {
-    $this->itv[$this->to_mn($req->tstamp)]->inc_reqs();
+    $mn = $this->to_mn($req->tstamp);
+    $this->itv[$mn]->inc_req_count();
+    $this->itv[$mn]->set_client($req->client);
+    # Extend client activity to previous and next interval
+    if ($mn > $this->min_mn) $this->itv[$mn-1]->set_client($req->client);
+    if ($mn < $this->max_mn) $this->itv[$mn+1]->set_client($req->client);
   }
 }
 
@@ -46,19 +45,19 @@ public function __construct($reqset, $clientset)
 
 public function csv()
 {
-  $reqsma=new MovingAverage(self::REQUESTS_MA_SIZE);
-  $ratema=new MovingAverage(self::RATE_MA_SIZE);
+  $reqs_ma=new MovingAverage(self::REQUESTS_MA_SIZE);
+  $rate_ma=new MovingAverage(self::RATE_MA_SIZE);
 
   $ret = Interval::csv_header()."RequestsMA;RateMA;\n";
 
   foreach($this->itv as $mn => $i) {
     $line=$i->csv_line();
 
-    $reqsma->add($i->reqs);
-    $line .= $reqsma->value().";";
+    $reqs_ma->add($i->req_count);
+    $line .= $reqs_ma->value().";";
 
-    $ratema->add($i->rate());
-    $line .= $ratema->value().";";
+    $rate_ma->add($i->rate());
+    $line .= $rate_ma->value().";";
 
     $ret .= $line."\n";
   }

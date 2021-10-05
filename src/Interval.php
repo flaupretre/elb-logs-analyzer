@@ -3,8 +3,8 @@
 class Interval {
 
 public $mn;
-public $clients=0;
-public $reqs=0;
+public $clients;
+public $req_count=0;
 
 #----------------------
 
@@ -27,20 +27,21 @@ private static function mn_to_dstring($mn)
 public function __construct($mn)
 {
   $this->mn = $mn;
+  $this->clients = array();
 }
 
 #---
 
-public function inc_clients()
+public function set_client($client)
 {
-$this->clients++;
+$this->clients[$client]=true;
 }
 
 #---
 
-public function inc_reqs()
+public function inc_req_count()
 {
-$this->reqs++;
+$this->req_count++;
 }
 
 #---
@@ -54,7 +55,7 @@ public static function csv_header()
 
 public function rate()
 {
-  return (($this->reqs==0) ? 0 : round($this->reqs/$this->clients));
+  return (($this->req_count==0) ? 0 : round($this->req_count/count($this->clients)));
 }
 
 #---
@@ -63,8 +64,8 @@ public function csv_line()
 {
   $ret = self::mn_to_estamp($this->mn)
      .";".self::mn_to_dstring($this->mn)
-      .";".$this->clients
-      .";".$this->reqs
+      .";".count($this->clients)
+      .";".$this->req_count
       .";".$this->rate()
       .";";
   return $ret;
