@@ -8,6 +8,7 @@ private $max_mn;
 
 const REQUESTS_MA_SIZE = 5; // Moving average subset size
 const RATE_MA_SIZE = 10; // Moving average subset size
+const CLIENT_ACTIVE_MINUTES = 3;
 
 #----------------------
 
@@ -35,8 +36,10 @@ public function __construct($reqset, $clientset)
     $this->itv[$mn]->inc_req_count();
     $this->itv[$mn]->set_client($req->client);
     # Extend client activity to previous and next interval
-    if ($mn > $this->min_mn) $this->itv[$mn-1]->set_client($req->client);
-    if ($mn < $this->max_mn) $this->itv[$mn+1]->set_client($req->client);
+    $mn_delta = $this->max_mn - $mn;
+    for ($offset=1;$offset <= self::CLIENT_ACTIVE_MINUTES;$offset++) {
+      if ($mn_delta > $offset) $this->itv[$mn+$offset]->set_client($req->client);
+    }
   }
 }
 
