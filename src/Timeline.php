@@ -21,7 +21,7 @@ private static function to_mn($tstamp)
 
 #---
 
-public function __construct($reqset, $clientset)
+public function __construct($reqset)
 {
   $this->min_mn = $this->to_mn($reqset->min_tstamp);
   $this->max_mn = $this->to_mn($reqset->max_tstamp);
@@ -34,11 +34,11 @@ public function __construct($reqset, $clientset)
   foreach($reqset->reqs as $req) {
     $mn = $this->to_mn($req->tstamp);
     $this->itv[$mn]->inc_req_count();
-    $this->itv[$mn]->set_client($req->client);
+    $this->itv[$mn]->add_client($req->client);
     # Extend client activity to previous and next interval
     $mn_delta = $this->max_mn - $mn;
     for ($offset=1;$offset <= self::CLIENT_ACTIVE_MINUTES;$offset++) {
-      if ($mn_delta > $offset) $this->itv[$mn+$offset]->set_client($req->client);
+      if ($mn_delta > $offset) $this->itv[$mn+$offset]->add_client($req->client);
     }
   }
 }

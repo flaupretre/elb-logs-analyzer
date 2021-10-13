@@ -32,7 +32,7 @@ public function __construct($mn)
 
 #---
 
-public function set_client($client)
+public function add_client($client)
 {
 $this->clients[$client]=true;
 }

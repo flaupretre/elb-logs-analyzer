@@ -6,16 +6,19 @@ public $clients; // Array: IP -> Client
 
 #-------------------
 
-public function __construct(RequestSet $set)
+public function __construct()
 {
   $this->clients=array();
+}
 
-  foreach($set->reqs as $req) {
-    if (!array_key_exists($req->client, $this->clients)) {
-      $this->clients[$req->client] = new Client($req->client);
-    }
-    $this->clients[$req->client]->add_request($req);
+#---
+
+public function add_req($req)
+{
+  if (!array_key_exists($req->client, $this->clients)) {
+    $this->clients[$req->client] = new Client($req->client);
   }
+  $this->clients[$req->client]->add_request($req);
 }
 
 #---

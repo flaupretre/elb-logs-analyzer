@@ -3,6 +3,9 @@
 class RequestSet {
 
 public $reqs;
+public $client_set;
+public $svc_set;
+
 public $min_tstamp = 0;
 public $max_tstamp = 0;
 public $host;
@@ -13,6 +16,8 @@ public function __construct($host)
 {
   $this->reqs = array();
   $this->host = $host;
+  $this->client_set = new ClientSet();
+  $this->svc_set = new SvcSet();
 }
 
 #---
@@ -24,6 +29,10 @@ public function insert_from_log_line($line)
   } catch (Exception $e) {
     return;
   }
+
+  $this->client_set->add_req($req);
+  $this->svc_set->add_req($req);
+
   if (count($this->reqs)) {
     $this->min_tstamp = min($this->min_tstamp, $req->tstamp);
     $this->max_tstamp = max($this->max_tstamp, $req->tstamp);

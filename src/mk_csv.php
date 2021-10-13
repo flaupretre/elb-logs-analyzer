@@ -16,6 +16,9 @@ require('Client.php');
 require('Timeline.php');
 require('Interval.php');
 require('MovingAverage.php');
+require('Svc.php');
+require('SvcSet.php');
+require('APICmd.php');
 
 #---
 
@@ -34,14 +37,14 @@ $reqs->insert_from_log_stdin();
 
 file_put_contents($result_base.'-Requests.csv', $reqs->csv());
 
-echo "Building client set...\n";
+file_put_contents($result_base.'-Clients.csv', $reqs->client_set->csv());
 
-$clients = new ClientSet($reqs);
-file_put_contents($result_base.'-Clients.csv', $clients->csv());
+file_put_contents($result_base.'-Svc.csv', $reqs->svc_set->csv());
 
 echo "Building time line...\n";
 
-$tline = new Timeline($reqs, $clients);
+$tline = new Timeline($reqs);
 file_put_contents($result_base.'-Timeline.csv', $tline->csv());
+
 
 ?>

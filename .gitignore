@@ -1,7 +1,6 @@
 *.log
 *.log.gz
 *.csv
-*.xls
-*.xlsx
 config.mk
 src/Browser
+data/output/*.xlsx
