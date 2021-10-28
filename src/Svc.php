@@ -19,11 +19,11 @@ public function __construct($svc)
 
 public function add_request($req)
 {
-  if (!array_key_exists($req->cmd1, $this->cmds)) {
-    $this->cmds[$req->cmd1] = new APICmd($this, $req->cmd1);
+  if (!array_key_exists($req->cmd, $this->cmds)) {
+    $this->cmds[$req->cmd] = new APICmd($this, $req->cmd);
   }
 
-  $this->cmds[$req->cmd1]->add_request($req);
+  $this->cmds[$req->cmd]->add_request($req);
 
   $this->reqs[] = $req;
 }

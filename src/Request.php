@@ -2,6 +2,7 @@
 
 class Request {
 
+public $set;
 public $date;
 public $time;
 public $tstamp;
@@ -12,8 +13,7 @@ public $rcvd;
 public $sent;
 public $method;
 public $svc;
-public $cmd1;
-public $cmd2;
+public $cmd;
 public $args;
 public $browser;
 public $platform;
@@ -22,7 +22,7 @@ public $platform;
 
 public static function csv_header()
 {
-  return "date;time;tstamp;src;dur;code;rcvd;sent;method;svc;cmd1;cmd2;args;browser;platform;";
+  return "date;time;tstamp;src;dur;code;rcvd;sent;method;svc;cmd;args;browser;platform;";
 }  
   
 #---
@@ -39,8 +39,7 @@ public function csv_line()
     (($this->sent == 0) ? '' : $this->sent).';'.
     $this->method.';'.
     $this->svc.';'.
-    $this->cmd1.';'.
-    $this->cmd2.';'.
+    $this->cmd.';'.
     $this->args.';'.
     $this->browser.';'.
     $this->platform.';';
@@ -48,8 +47,10 @@ public function csv_line()
   
 #---
 
-public function __construct($line, $host)  
+public function __construct($set, $line, $host)  
 {
+  $this->set = $set;
+
   preg_match_all('/"(?:\\\\.|[^\\\\"])*"|\S+/', $line, $matches); 
   $a=$matches[0];
   //var_dump($a);
@@ -91,14 +92,8 @@ public function __construct($line, $host)
 
   $this->svc=preg_replace('/\/.*$/', '', $path);
   $this->cmd=((strpos($p, '/') != false) ? preg_replace('/^[^\/]+\//', '', $path) : '');
-  if (strpos($this->cmd, '/') != false) {
-    $acmd=explode('/', $this->cmd, 2);
-    $this->cmd1=$acmd[0];
-    $this->cmd2=$acmd[1];
-  } else {
-    $this->cmd1=$this->cmd;
-    $this->cmd2='';
-  }
+  $this->cmd=preg_replace('/[\/0-9]+$/', '/xxx', $this->cmd);
+  $this->cmd=preg_replace('/\/[0-9]+\//', '/xxx/', $this->cmd);
 
   $b=new Browser($a[12]);
   $this->browser=$b->getBrowser();

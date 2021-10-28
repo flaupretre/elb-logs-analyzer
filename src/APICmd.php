@@ -24,7 +24,7 @@ public function add_request($req)
 
 public static function csv_header()
 {
-  return "cmd;count;dmean;dmin;dmax;dpct25;dpct50;dpct75;dpct95;";
+  return "cmd;count;countpc;dmean;dmin;dmax;dpct25;dpct50;dpct75;dpct95;";
 }  
   
 #---
@@ -53,6 +53,7 @@ public function csv_line()
     foreach($this->reqs as $req) $d[]=$req->duration;
     sort($d);
     $c = count($d);
+    $cpc = round(($c * 100)/$this->reqs[0]->set->size()).'%';
     $dmean = round(array_sum($d) / $c);
     $dmin = min($d);
     $dmax = max($d);
@@ -66,6 +67,7 @@ public function csv_line()
     
   return $this->cmd.';'.
     $c.';'.
+    $cpc.';'.
     $dmean.';'.
     $dmin.';'.
     $dmax.';'.

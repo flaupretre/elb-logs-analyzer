@@ -22,11 +22,18 @@ public function __construct($host)
 
 #---
 
+public function size()
+{
+  return count($this->reqs);
+}
+
+#---
+
 public function insert_from_log_line($line)
 {
   if ((count($this->reqs) % 50000) == 0) echo 'Requests: '.count($this->reqs)."...\n";
   try {
-    $req = new Request($line, $this->host);
+    $req = new Request($this, $line, $this->host);
   } catch (Exception $e) {
     return;
   }
@@ -34,7 +41,7 @@ public function insert_from_log_line($line)
   $this->client_set->add_req($req);
   $this->svc_set->add_req($req);
 
-  if (count($this->reqs)) {
+  if ($this->size()) {
     $this->min_tstamp = min($this->min_tstamp, $req->tstamp);
     $this->max_tstamp = max($this->max_tstamp, $req->tstamp);
   } else {
@@ -60,7 +67,7 @@ public function csv(&$restart, $split=0)
   $ret = "";
   if ($start == 0) $ret .= Request::csv_header()."\n";
   
-  while($num < count($this->reqs)) {
+  while($num < $this->size()) {
     if ($split && (($num - $start) > $split)) {
       $restart = $num;
       echo "Requests: returning partial results ($start - ".($num - 1).")\n";
