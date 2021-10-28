@@ -26,6 +26,7 @@ public function add_req($req)
 public function csv()
 {
   $ret = Client::csv_header()."\n";
+  ksort($this->clients);
   foreach($this->clients as $client) {
     $ret .= $client->csv_line()."\n";
   }

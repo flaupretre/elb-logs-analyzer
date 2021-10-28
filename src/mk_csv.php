@@ -22,6 +22,10 @@ require('APICmd.php');
 
 #---
 
+define('SPLIT_LINES', 0);
+
+#---
+
 if ($_SERVER['argc'] < 3) {
   fwrite(STDERR, "Usage: <cmd> <host name> <result base>\n");
   exit(1);
@@ -35,7 +39,14 @@ echo "Building request set...\n";
 $reqs = new RequestSet($filter_host);
 $reqs->insert_from_log_stdin();
 
-file_put_contents($result_base.'-Requests.csv', $reqs->csv());
+$start=0;
+$index=0;
+while(true) {
+file_put_contents($result_base.'-Requests'.($index ? "-$index" : "").'.csv'
+  , $reqs->csv($start, SPLIT_LINES));
+if ($start == 0) break;
+$index++;
+}
 
 file_put_contents($result_base.'-Clients.csv', $reqs->client_set->csv());
 

@@ -3,8 +3,6 @@
 class Timeline {
 
 private $itv; // Array of 'Interval' elements
-private $min_mn;
-private $max_mn;
 
 const REQUESTS_MA_SIZE = 5; // Moving average subset size
 const RATE_MA_SIZE = 10; // Moving average subset size
@@ -23,24 +21,21 @@ private static function to_mn($tstamp)
 
 public function __construct($reqset)
 {
-  $this->min_mn = $this->to_mn($reqset->min_tstamp);
-  $this->max_mn = $this->to_mn($reqset->max_tstamp);
   $this->itv = array();
-
-  for ($mn=$this->min_mn; $mn <= $this->max_mn; $mn++) {
-    $this->itv[$mn] = new Interval($mn);
-  }
 
   foreach($reqset->reqs as $req) {
     $mn = $this->to_mn($req->tstamp);
+    if (!array_key_exists($mn, $this->itv)) $this->itv[$mn] = new Interval($mn);
     $this->itv[$mn]->inc_req_count();
     $this->itv[$mn]->add_client($req->client);
-    # Extend client activity to previous and next interval
-    $mn_delta = $this->max_mn - $mn;
+    # Extend client activity to CLIENT_ACTIVE_MINUTES
     for ($offset=1;$offset <= self::CLIENT_ACTIVE_MINUTES;$offset++) {
-      if ($mn_delta > $offset) $this->itv[$mn+$offset]->add_client($req->client);
+      $mno = $mn + $offset;
+      if (!array_key_exists($mno, $this->itv)) $this->itv[$mno] = new Interval($mno);
+      $this->itv[$mno]->add_client($req->client);
     }
   }
+  ksort($this->itv);
 }
 
 #---
@@ -56,11 +51,8 @@ public function csv()
   foreach($this->itv as $mn => $i) {
     $line=$i->csv_line();
 
-    $reqs_ma->add($i->req_count);
-    $line .= $reqs_ma->value().";";
-
-    $rate_ma->add($i->rate());
-    $line .= $rate_ma->value().";";
+    $line .= $reqs_ma->append($mn, $i->req_count).";";
+    $line .= $rate_ma->append($mn, $i->rate()).";";
 
     $ret .= $line."\n";
   }

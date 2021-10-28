@@ -24,6 +24,7 @@ public function __construct($host)
 
 public function insert_from_log_line($line)
 {
+  if ((count($this->reqs) % 50000) == 0) echo 'Requests: '.count($this->reqs)."...\n";
   try {
     $req = new Request($line, $this->host);
   } catch (Exception $e) {
@@ -53,12 +54,21 @@ public function insert_from_log_stdin()
 
 #---
 
-public function csv()
+public function csv(&$restart, $split=0)
 {
-  $ret = Request::csv_header()."\n";
-  foreach($this->reqs as $req) {
-    $ret .= $req->csv_line()."\n";
+  $start = $num = $restart;
+  $ret = "";
+  if ($start == 0) $ret .= Request::csv_header()."\n";
+  
+  while($num < count($this->reqs)) {
+    if ($split && (($num - $start) > $split)) {
+      $restart = $num;
+      echo "Requests: returning partial results ($start - ".($num - 1).")\n";
+      return $ret;
+    }
+    $ret .= $this->reqs[$num++]->csv_line()."\n";
   }
+$restart = 0;
 return $ret;
 }
 
